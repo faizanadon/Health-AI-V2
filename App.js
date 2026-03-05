@@ -126,14 +126,10 @@ const SYMPTOMS = ['Fever','Headache','Chest pain','Skin rash','Back pain','Cough
 // ─── AI ──────────────────────────────────────────────────────────
 const AI_SYSTEM = `You are HealthBot, AI medical assistant for HealthAI Pakistan. Analyze symptoms, recommend specialists (General Physician, Cardiologist, Neurologist, Dermatologist, Orthopedist, Pediatrician), suggest OTC medicines (Paracetamol, Ibuprofen, Cetirizine, Omeprazole). Use **bold** for medicines and specialists. Max 150 words. Emergencies: call 115. Never diagnose, only guide.`;
 
-// ─── AI API (Gemini) ─────────────────────────────────────────────
-const AI_SYSTEM = `You are HealthBot, AI medical assistant for HealthAI Pakistan. Analyze symptoms, recommend specialists (General Physician, Cardiologist, Neurologist, Dermatologist, Orthopedist, Pediatrician), suggest OTC medicines (Paracetamol, Ibuprofen, Cetirizine, Omeprazole). Use **bold** for medicines and specialists. Max 150 words. Emergencies: call 115. Never diagnose, only guide.`;
-
-const GEMINI_API_KEY = 'AIzaSyBeTmmeC1CdDyyQ2QHP0ZB3ybLfq8wo104';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+const GEMINI_API_KEY = 'AIzaSyA8cmNdeoVl62Y28P1Jui7Dq2hnISn1IMs';
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 async function callAI(history) {
-  // Convert chat history to Gemini format
   const contents = history.map(msg => ({
     role: msg.role === 'assistant' ? 'model' : 'user',
     parts: [{ text: msg.content }],
@@ -143,14 +139,9 @@ async function callAI(history) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      system_instruction: {
-        parts: [{ text: AI_SYSTEM }],
-      },
+      system_instruction: { parts: [{ text: AI_SYSTEM }] },
       contents,
-      generationConfig: {
-        maxOutputTokens: 300,
-        temperature: 0.7,
-      },
+      generationConfig: { maxOutputTokens: 300, temperature: 0.7 },
     }),
   });
 
