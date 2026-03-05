@@ -126,15 +126,41 @@ const SYMPTOMS = ['Fever','Headache','Chest pain','Skin rash','Back pain','Cough
 // ─── AI ──────────────────────────────────────────────────────────
 const AI_SYSTEM = `You are HealthBot, AI medical assistant for HealthAI Pakistan. Analyze symptoms, recommend specialists (General Physician, Cardiologist, Neurologist, Dermatologist, Orthopedist, Pediatrician), suggest OTC medicines (Paracetamol, Ibuprofen, Cetirizine, Omeprazole). Use **bold** for medicines and specialists. Max 150 words. Emergencies: call 115. Never diagnose, only guide.`;
 
+// ─── AI API (Gemini) ─────────────────────────────────────────────
+const AI_SYSTEM = `You are HealthBot, AI medical assistant for HealthAI Pakistan. Analyze symptoms, recommend specialists (General Physician, Cardiologist, Neurologist, Dermatologist, Orthopedist, Pediatrician), suggest OTC medicines (Paracetamol, Ibuprofen, Cetirizine, Omeprazole). Use **bold** for medicines and specialists. Max 150 words. Emergencies: call 115. Never diagnose, only guide.`;
+
+const GEMINI_API_KEY = 'AIzaSyBeTmmeC1CdDyyQ2QHP0ZB3ybLfq8wo104';
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+
 async function callAI(history) {
-  const API_KEY = 'YOUR_ANTHROPIC_API_KEY_HERE';
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  // Convert chat history to Gemini format
+  const contents = history.map(msg => ({
+    role: msg.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: msg.content }],
+  }));
+
+  const res = await fetch(GEMINI_URL, {
     method: 'POST',
-    headers: { 'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key':API_KEY },
-    body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, system:AI_SYSTEM, messages:history }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      system_instruction: {
+        parts: [{ text: AI_SYSTEM }],
+      },
+      contents,
+      generationConfig: {
+        maxOutputTokens: 300,
+        temperature: 0.7,
+      },
+    }),
   });
-  if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message||'API error'); }
-  return (await res.json()).content[0].text;
+
+  if (!res.ok) {
+    const e = await res.json();
+    throw new Error(e.error?.message || 'Gemini API error');
+  }
+
+  const data = await res.json();
+  return data.candidates[0].content.parts[0].text;
 }
 
 // ─── SHARED COMPONENTS ───────────────────────────────────────────

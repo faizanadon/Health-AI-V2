@@ -4,27 +4,15 @@
     "slug": "healthai",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0A0F1E"
-    },
+    "userInterfaceStyle": "light",
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.lgu.healthai"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0A0F1E"
-      },
       "package": "com.lgu.healthai"
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    }
+    "newArchEnabled": false
   }
 }
